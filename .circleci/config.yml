@@ -25,9 +25,6 @@ jobs:
           device: iPhone 14
           version: '16.2'
       - checkout
-      - ruby/install:
-          version: '3.0.4'
-      - run: echo "Ruby 3.0.4 has been installed"
       # - run:
       #     name: bundle Install
       #     command: bundle install --path vendor/bundle
@@ -47,9 +44,6 @@ jobs:
           device: iPhone 14
           version: '16.2'
       - checkout
-      - ruby/install:
-          version: '3.0.4'
-      - run: echo "Ruby 3.0.4 has been installed"
       # - run:
       #     name: bundle Install
       #     command: bundle install --path vendor/bundle
@@ -67,9 +61,6 @@ jobs:
     executor: << parameters.executor >>
     steps:
       - checkout
-      - ruby/install:
-          version: '3.0.4'
-      - run: echo "Ruby 3.0.4 has been installed"
       # - run:
       #     name: bundle Install
       #     command: bundle install --path vendor/bundle

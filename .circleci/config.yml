@@ -60,7 +60,7 @@ jobs:
       - run: bundle exec fastlane build
 
 workflows:
-  m1_large_workflow-1:
+  m1_large_workflow:
     jobs:
       - unit_test:
           executor: m1_large
@@ -69,7 +69,7 @@ workflows:
       - build:
           executor: m1_large
 
-  gen2_medium_workflow-2:
+  gen2_medium_workflow:
     jobs:
       - unit_test:
           executor: gen2_medium

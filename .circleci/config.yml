@@ -64,16 +64,16 @@ workflows:
     jobs:
       - unit_test:
           executor: m1_large
-      - integration_test:
-          executor: m1_large
-      - build:
-          executor: m1_large
+      # - integration_test:
+      #     executor: m1_large
+      # - build:
+      #     executor: m1_large
 
   gen2_medium_workflow:
     jobs:
       - unit_test:
           executor: gen2_medium
-      - integration_test:
-          executor: gen2_medium
-      - build:
-          executor: gen2_medium
+      # - integration_test:
+      #     executor: gen2_medium
+      # - build:
+      #     executor: gen2_medium

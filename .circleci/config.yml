@@ -25,9 +25,9 @@ jobs:
           device: iPhone 14
           version: '16.2'
       - checkout
-      - run:
-          name: bundle Install
-          command: bundle install --path vendor/bundle
+      # - run:
+      #     name: bundle Install
+      #     command: bundle install --path vendor/bundle
       - run: git submodule update --init --recursive
       - ruby/install-deps
       - run: bundle exec fastlane unit_tests
@@ -44,9 +44,9 @@ jobs:
           device: iPhone 14
           version: '16.2'
       - checkout
-      - run:
-          name: bundle Install
-          command: bundle install --path vendor/bundle
+      # - run:
+      #     name: bundle Install
+      #     command: bundle install --path vendor/bundle
       - run: git submodule update --init --recursive
       - ruby/install-deps
       - run: bundle exec fastlane integration_tests
@@ -61,15 +61,15 @@ jobs:
     executor: << parameters.executor >>
     steps:
       - checkout
-      - run:
-          name: bundle Install
-          command: bundle install --path vendor/bundle
+      # - run:
+      #     name: bundle Install
+      #     command: bundle install --path vendor/bundle
       - run: git submodule update --init --recursive
       - ruby/install-deps
       - run: bundle exec fastlane build
 
 workflows:
-  m1_large_workflow1:
+  m1_large_workflow:
     jobs:
       - unit_test:
           executor: m1_large

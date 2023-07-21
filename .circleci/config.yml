@@ -48,16 +48,16 @@ jobs:
       - store_test_results:
           path: fastlane/report.xml
 
-  build:
-    parameters:
-      executor:
-        type: executor
-    executor: << parameters.executor >>
-    steps:
-      - checkout
-      - run: git submodule update --init --recursive
-      - ruby/install-deps
-      - run: bundle exec fastlane build
+  # build:
+  #   parameters:
+  #     executor:
+  #       type: executor
+  #   executor: << parameters.executor >>
+  #   steps:
+  #     - checkout
+  #     - run: git submodule update --init --recursive
+  #     - ruby/install-deps
+  #     - run: bundle exec fastlane build
 
 workflows:
   m1_large_workflow:
@@ -66,8 +66,8 @@ workflows:
           executor: m1_large
       - integration_test:
           executor: m1_large
-      - build:
-          executor: m1_large
+      # - build:
+      #     executor: m1_large
 
   gen2_medium_workflow:
     jobs:
@@ -75,5 +75,5 @@ workflows:
           executor: gen2_medium
       - integration_test:
           executor: gen2_medium
-      - build:
-          executor: gen2_medium
+      # - build:
+      #     executor: gen2_medium

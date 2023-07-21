@@ -18,7 +18,6 @@
 //
 
 import SwiftUI
-import DesignResourcesKit
 
 struct AppTPBreakageFormHeaderView: View {
     
@@ -27,11 +26,17 @@ struct AppTPBreakageFormHeaderView: View {
     var body: some View {
         HStack {
             Text(text)
-                .daxBodyRegular()
+                .font(Font(uiFont: Const.Font.sectionHeader))
                 .foregroundColor(.infoText)
             
             Spacer()
         }
+    }
+}
+
+private enum Const {
+    enum Font {
+        static let sectionHeader = UIFont.appFont(ofSize: 17)
     }
 }
 

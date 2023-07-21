@@ -27,7 +27,6 @@ public struct BrokenSiteInfo {
     private struct Keys {
         static let url = "siteUrl"
         static let category = "category"
-        static let description = "description"
         static let upgradedHttps = "upgradedHttps"
         static let tds = "tds"
         static let blockedTrackers = "blockedTrackers"
@@ -84,11 +83,10 @@ public struct BrokenSiteInfo {
         }
     }
     
-    func send(with category: String?, description: String) {
+    func send(with category: String) {
         
         let parameters = [Keys.url: normalize(url),
-                          Keys.category: category ?? "",
-                          Keys.description: description,
+                          Keys.category: category,
                           Keys.upgradedHttps: httpsUpgrade ? "true" : "false",
                           Keys.siteType: isDesktop ? "desktop" : "mobile",
                           Keys.tds: tdsETag?.trimmingCharacters(in: CharacterSet(charactersIn: "\"")) ?? "",

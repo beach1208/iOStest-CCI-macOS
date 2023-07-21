@@ -18,7 +18,6 @@
 //
 
 import SwiftUI
-import DesignResourcesKit
 
 #if APP_TRACKING_PROTECTION
 
@@ -34,8 +33,6 @@ struct AppTPToggleView: View {
         Toggle(isOn: $viewModel.isOn, label: {
             HStack {
                 Text(UserText.appTPNavTitle)
-                    .daxBodyRegular()
-                    .foregroundColor(Color.fontColor)
 
                 Spacer()
                 
@@ -65,14 +62,17 @@ struct AppTPToggleView: View {
 }
 
 private enum Const {
+    enum Font {
+        static let toggleLabel = UIFont.appFont(ofSize: 16)
+    }
+    
     enum Size {
         static let rowHeight: CGFloat = 44
     }
 }
 
 private extension Color {
-    static let toggleTint = Color(designSystemColor: .accent)
-    static let fontColor = Color("AppTPDomainColor")
+    static let toggleTint = Color("AppTPToggleColor")
 }
 
 #endif

@@ -106,9 +106,7 @@ public struct PixelParameters {
 
     public static let bookmarkErrorOrphanedFolderCount = "bookmark_error_orphaned_count"
 
-    // Remote messaging
-    public static let message = "message"
-    public static let sheetResult = "success"
+    public static let ctaShown = "cta"
 }
 
 public struct PixelValues {
@@ -138,7 +136,7 @@ public class Pixel {
                             forDeviceType deviceType: UIUserInterfaceIdiom? = UIDevice.current.userInterfaceIdiom,
                             withAdditionalParameters params: [String: String] = [:],
                             allowedQueryReservedCharacters: CharacterSet? = nil,
-                            withHeaders headers: APIRequest.Headers = APIRequest.Headers(),
+                            withHeaders headers: HTTPHeaders = APIRequest.Headers().default,
                             includedParameters: [QueryParameters] = [.atb, .appVersion],
                             onComplete: @escaping (Error?) -> Void = { _ in }) {
         
@@ -179,23 +177,20 @@ public class Pixel {
 extension Pixel {
     
     public static func fire(pixel: Pixel.Event,
-                            error: Error?,
+                            error: Error,
                             withAdditionalParameters params: [String: String] = [:],
                             onComplete: @escaping (Error?) -> Void = { _ in }) {
+        let nsError = error as NSError
         var newParams = params
-        if let error {
-            let nsError = error as NSError
-
-            newParams[PixelParameters.errorCode] = "\(nsError.code)"
-            newParams[PixelParameters.errorDomain] = nsError.domain
-
-            if let underlyingError = nsError.userInfo["NSUnderlyingError"] as? NSError {
-                newParams[PixelParameters.underlyingErrorCode] = "\(underlyingError.code)"
-                newParams[PixelParameters.underlyingErrorDomain] = underlyingError.domain
-            } else if let sqlErrorCode = nsError.userInfo["NSSQLiteErrorDomain"] as? NSNumber {
-                newParams[PixelParameters.underlyingErrorCode] = "\(sqlErrorCode.intValue)"
-                newParams[PixelParameters.underlyingErrorDomain] = "NSSQLiteErrorDomain"
-            }
+        newParams[PixelParameters.errorCode] = "\(nsError.code)"
+        newParams[PixelParameters.errorDomain] = nsError.domain
+        
+        if let underlyingError = nsError.userInfo["NSUnderlyingError"] as? NSError {
+            newParams[PixelParameters.underlyingErrorCode] = "\(underlyingError.code)"
+            newParams[PixelParameters.underlyingErrorDomain] = underlyingError.domain
+        } else if let sqlErrorCode = nsError.userInfo["NSSQLiteErrorDomain"] as? NSNumber {
+            newParams[PixelParameters.underlyingErrorCode] = "\(sqlErrorCode.intValue)"
+            newParams[PixelParameters.underlyingErrorDomain] = "NSSQLiteErrorDomain"
         }
         
         fire(pixel: pixel, withAdditionalParameters: newParams, includedParameters: [], onComplete: onComplete)

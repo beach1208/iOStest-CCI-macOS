@@ -324,7 +324,7 @@ class TabViewController: UIViewController {
     }
 
     override func buildActivities() -> [UIActivity] {
-        let viewModel = MenuBookmarksViewModel(bookmarksDatabase: bookmarksDatabase, syncService: syncService)
+        let viewModel = MenuBookmarksViewModel(bookmarksDatabase: bookmarksDatabase)
         var activities: [UIActivity] = [SaveBookmarkActivity(controller: self,
                                                              viewModel: viewModel)]
 
@@ -1556,7 +1556,13 @@ extension TabViewController: WKNavigationDelegate {
     }
     
     private func showLoginDetails(with account: SecureVaultModels.WebsiteAccount) {
-        delegate?.tab(self, didRequestSettingsToLogins: account)
+        if let navController = SettingsViewController.loadFromStoryboard() as? UINavigationController,
+           let settingsController = navController.topViewController as? SettingsViewController {
+            settingsController.loadViewIfNeeded()
+            
+            settingsController.showAutofillAccountDetails(account, animated: false)
+            self.present(navController, animated: true)
+        }
     }
     
     @objc private func dismissLoginDetails() {
@@ -2283,12 +2289,12 @@ extension TabViewController: EmailManagerAliasPermissionDelegate {
 extension TabViewController: EmailManagerRequestDelegate {
 
     // swiftlint:disable function_parameter_count
-    func emailManager(_ emailManager: EmailManager, requested url: URL, method: String, headers: HTTPHeaders, parameters: [String: String]?, httpBody: Data?, timeoutInterval: TimeInterval) async throws -> Data {
+    func emailManager(_ emailManager: EmailManager, requested url: URL, method: String, headers: [String: String], parameters: [String: String]?, httpBody: Data?, timeoutInterval: TimeInterval) async throws -> Data {
         let method = APIRequest.HTTPMethod(rawValue: method) ?? .post
         let configuration = APIRequest.Configuration(url: url,
                                                      method: method,
                                                      queryParameters: parameters ?? [:],
-                                                     headers: APIRequest.Headers(additionalHeaders: headers),
+                                                     headers: headers,
                                                      body: httpBody,
                                                      timeoutInterval: timeoutInterval)
         let request = APIRequest(configuration: configuration, urlSession: .session())
@@ -2368,14 +2374,7 @@ extension TabViewController: SecureVaultManagerDelegate {
             saveLoginController.delegate = self
             if #available(iOS 15.0, *) {
                 if let presentationController = saveLoginController.presentationController as? UISheetPresentationController {
-                    if #available(iOS 16.0, *) {
-                        presentationController.detents = [.custom(resolver: { _ in
-                            saveLoginController.viewModel?.minHeight
-                        })]
-                    } else {
-                        presentationController.detents = [.medium()]
-                    }
-                    presentationController.prefersScrollingExpandsWhenScrolledToEdge = false
+                    presentationController.detents = [.medium(), .large()]
                 }
             }
             self.present(saveLoginController, animated: true, completion: nil)
@@ -2499,13 +2498,7 @@ extension TabViewController: SecureVaultManagerDelegate {
 
         if #available(iOS 15.0, *) {
             if let presentationController = autofillPromptViewController.presentationController as? UISheetPresentationController {
-                if #available(iOS 16.0, *) {
-                    presentationController.detents = [.custom(resolver: { _ in
-                        AutofillViews.loginPromptMinHeight
-                    })]
-                } else {
-                    presentationController.detents = useLargeDetent ? [.large()] : [.medium()]
-                }
+                presentationController.detents = useLargeDetent ? [.large()] : [.medium()]
             }
         }
         self.present(autofillPromptViewController, animated: true, completion: nil)
@@ -2540,13 +2533,7 @@ extension TabViewController: SecureVaultManagerDelegate {
 
         if #available(iOS 15.0, *) {
             if let presentationController = passwordGenerationPromptViewController.presentationController as? UISheetPresentationController {
-                if #available(iOS 16.0, *) {
-                    presentationController.detents = [.custom(resolver: { _ in
-                        AutofillViews.passwordGenerationMinHeight
-                    })]
-                } else {
-                    presentationController.detents = [.medium()]
-                }
+                presentationController.detents = [.medium()]
             }
         }
         self.present(passwordGenerationPromptViewController, animated: true)

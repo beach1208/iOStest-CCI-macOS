@@ -18,7 +18,7 @@
 //
 
 import Foundation
-import RemoteMessaging
+import BrowserServicesKit
 
 enum HomeMessage: Equatable {
     case placeholder

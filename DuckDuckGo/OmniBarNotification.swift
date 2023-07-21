@@ -38,10 +38,10 @@ struct OmniBarNotification: View {
                 text
             }
             .background(
-                RoundedRectangle(cornerRadius: 8)
+                Capsule()
                     .foregroundColor(Constants.Colors.background)
                     .offset(x: textOffset)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .clipShape(Capsule())
             )
             
             Spacer()
@@ -113,7 +113,7 @@ private enum Constants {
 
     enum Spacing {
         static let textClippingShapeOffset: CGFloat = -7
-        static let textTrailingPadding: CGFloat = 12
+        static let textTrailingPadding: CGFloat = 18
     }
     
     enum Size {

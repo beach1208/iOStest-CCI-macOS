@@ -85,8 +85,6 @@ protocol HomeViewSectionRenderer: AnyObject {
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal
 
     func endReordering()
-
-    func didAppear()
     
 }
 
@@ -113,13 +111,7 @@ class HomeViewSectionRenderers: NSObject,
         self.theme = theme
         super.init()
     }
-
-    func didAppear() {
-        renderers.forEach {
-            $0.didAppear()
-        }
-    }
-
+    
     func install(renderer: HomeViewSectionRenderer) {
         renderer.install(into: controller)
         renderers.append(renderer)

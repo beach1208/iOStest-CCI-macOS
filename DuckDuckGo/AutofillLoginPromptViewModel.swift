@@ -25,7 +25,6 @@ protocol AutofillLoginPromptViewModelDelegate: AnyObject {
     func autofillLoginPromptViewModel(_ viewModel: AutofillLoginPromptViewModel, didSelectAccount account: SecureVaultModels.WebsiteAccount)
     func autofillLoginPromptViewModelDidCancel(_ viewModel: AutofillLoginPromptViewModel)
     func autofillLoginPromptViewModelDidRequestExpansion(_ viewModel: AutofillLoginPromptViewModel)
-    func autofillLoginPromptViewModelDidResizeContent(_ viewModel: AutofillLoginPromptViewModel, contentHeight: CGFloat)
 }
 
 struct AccountMatchesViewModel {
@@ -80,13 +79,6 @@ class AutofillLoginPromptViewModel: ObservableObject {
     private(set) var expanded = false {
         didSet {
             setUpAccountsViewModels(accounts: accounts)
-        }
-    }
-
-    var contentHeight: CGFloat = AutofillViews.loginPromptMinHeight {
-        didSet {
-            guard contentHeight != oldValue, contentHeight > 0 else { return }
-            delegate?.autofillLoginPromptViewModelDidResizeContent(self, contentHeight: max(contentHeight, AutofillViews.loginPromptMinHeight))
         }
     }
     

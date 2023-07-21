@@ -22,7 +22,6 @@ import Common
 import CoreData
 import Core
 import BrowserServicesKit
-import RemoteMessaging
 
 final class RemoteMessagingStore: RemoteMessagingStoring {
 

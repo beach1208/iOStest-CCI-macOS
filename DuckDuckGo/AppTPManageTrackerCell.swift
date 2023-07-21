@@ -18,33 +18,30 @@
 //
 
 import SwiftUI
-import DesignResourcesKit
 
 struct AppTPManageTrackerCell: View {
     
     @State var isBlocking: Bool
-    let trackerDomain: String
-    let trackerOwner: String
+    let tracker: ManagedTrackerRepresentable
     let imageCache: AppTrackerImageCache
     let showDivider: Bool
     
     let onToggleTracker: (String, Bool) -> Void
     
-    init(trackerDomain: String, trackerBlocked: Bool, trackerOwner: String, imageCache: AppTrackerImageCache,
+    init(tracker: ManagedTrackerRepresentable, imageCache: AppTrackerImageCache,
          showDivider: Bool, onToggleTracker: @escaping (String, Bool) -> Void) {
-        self.trackerDomain = trackerDomain
-        self.trackerOwner = trackerOwner
+        self.tracker = tracker
         self.onToggleTracker = onToggleTracker
         self.imageCache = imageCache
         self.showDivider = showDivider
         
-        _isBlocking = .init(initialValue: trackerBlocked)
+        _isBlocking = .init(initialValue: tracker.blocking)
     }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .center) {
-                let trackerRep = imageCache.loadTrackerImage(for: trackerOwner)
+            HStack {
+                let trackerRep = imageCache.loadTrackerImage(for: tracker.trackerOwner)
                 switch trackerRep {
                 case .svg(let image):
                     Image(uiImage: image)
@@ -58,13 +55,13 @@ struct AppTPManageTrackerCell: View {
                 
                 
                 Toggle(isOn: $isBlocking) {
-                    Text(trackerDomain)
-                        .daxBodyRegular()
+                    Text(tracker.domain)
+                        .font(Font(uiFont: Const.Font.info))
                         .foregroundColor(.infoText)
                 }
                 .toggleStyle(SwitchToggleStyle(tint: .toggleTint))
                 .onChange(of: isBlocking) { value in
-                    onToggleTracker(trackerDomain, value)
+                    onToggleTracker(tracker.domain, value)
                 }
             }
             .padding(.horizontal)
@@ -72,21 +69,23 @@ struct AppTPManageTrackerCell: View {
             
             if showDivider {
                 Divider()
-                    .padding(.leading, Const.Size.dividerPadding)
             }
         }
     }
 }
 
 private enum Const {
+    enum Font {
+        static let info = UIFont.appFont(ofSize: 16)
+    }
+    
     enum Size {
         static let standardCellHeight: CGFloat = 44
-        static let dividerPadding: CGFloat = 44
         static let iconWidth: CGFloat = 25
     }
 }
 
 private extension Color {
     static let infoText = Color("AppTPDomainColor")
-    static let toggleTint = Color(designSystemColor: .accent)
+    static let toggleTint = Color("AppTPToggleColor")
 }

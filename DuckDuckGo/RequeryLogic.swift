@@ -75,7 +75,9 @@ class RequeryLogic {
             pixel = .serpRequeryNew
         }
         
-        let headers = APIRequest.Headers(userAgent: userAgentManager.userAgent(isDesktop: false))
+        var headers = APIRequest.Headers().default
+        headers[APIRequest.HTTPHeaderField.userAgent] = userAgentManager.userAgent(isDesktop: false)
+        
         Pixel.fire(pixel: pixel, forDeviceType: nil, withHeaders: headers, onComplete: { _ in })
     }
 }

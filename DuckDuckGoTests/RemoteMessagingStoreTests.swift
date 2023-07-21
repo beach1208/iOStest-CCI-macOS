@@ -23,7 +23,6 @@ import CoreData
 @testable import DuckDuckGo
 @testable import Core
 @testable import BrowserServicesKit
-@testable import RemoteMessaging
 
 class RemoteMessagingStoreTests: XCTestCase {
 

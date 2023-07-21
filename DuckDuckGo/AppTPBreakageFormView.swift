@@ -18,8 +18,6 @@
 //
 
 import SwiftUI
-import DuckUI
-import DesignResourcesKit
 import Core
 
 private enum BreakageCategory: String, CaseIterable, Identifiable {
@@ -88,24 +86,8 @@ struct AppTPBreakageFormView: View {
     }
     
     var body: some View {
-        formWithBackground
-    }
-    
-    @ViewBuilder
-    var formWithBackground: some View {
-        if #available(iOS 16.0, *) {
-            form
-                .scrollContentBackground(.hidden)
-                .background(Color.viewBackground)
-        } else {
-            form
-                .background(Color.viewBackground)
-        }
-    }
-    
-    var form: some View {
         ZStack {
-            List {
+            Form {
                 Section {
                     VStack {
                         AppTPBreakageFormHeaderView(text: UserText.appTPReportAppLabel)
@@ -144,22 +126,23 @@ struct AppTPBreakageFormView: View {
                             if self.description.isEmpty {
                                 TextEditor(text: $placeholderText)
                                     .font(.body)
-                                    .foregroundColor(Color(UIColor.placeholderText))
+                                    .foregroundColor(.gray)
                                     .disabled(true)
                             }
                             
                             TextEditor(text: $description)
                                 .font(.body)
+                                .opacity(self.description.isEmpty ? 0.25 : 1)
                         }
                         .padding(.leading, Const.Size.commentFieldPadding)
                     }
                     .frame(minHeight: Const.Size.minCommentHeight)
                 } footer: {
                     Text(UserText.appTPReportFooter)
-                        .fontWithLineHeight(font: Const.Font.footer, lineHeight: Const.Size.lineHeight)
-                        .foregroundColor(.footerText)
-                        .padding(.leading, Const.Size.sectionIndentation)
-                        .padding(.top)
+                    .fontWithLineHeight(font: Const.Font.footer, lineHeight: Const.Size.lineHeight)
+                    .foregroundColor(.infoText)
+                    .padding(.leading, Const.Size.sectionIndentation)
+                    .padding(.top)
                 }
                 
                 Section {
@@ -167,15 +150,14 @@ struct AppTPBreakageFormView: View {
                         sendReport()
                     }, label: {
                         Text(UserText.appTPReportSubmit)
+                            .font(Font(uiFont: Const.Font.button))
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .foregroundColor(appName.isEmpty ? Color.disabledButtonLabel : Color.buttonLabelColor)
                     })
-                    .buttonStyle(PrimaryButtonStyle(disabled: appName.isEmpty))
-                    .frame(height: 30)
-                    .listRowBackground(Color.clear)
+                    .listRowBackground(appName.isEmpty ? Color.disabledButton : Color.buttonColor)
                     .disabled(appName.isEmpty)
-                    .listRowInsets(EdgeInsets())
                 }
             }
-            .listStyle(.insetGrouped)
             .navigationTitle(UserText.appTPReportTitle)
             .alert(isPresented: $showError) {
                 Alert(
@@ -190,6 +172,7 @@ struct AppTPBreakageFormView: View {
 
 private enum Const {
     enum Font {
+        static let button = UIFont.semiBoldAppFont(ofSize: 17)
         static let footer = UIFont.appFont(ofSize: 15)
     }
     
@@ -205,7 +188,8 @@ private enum Const {
 
 private extension Color {
     static let infoText = Color("AppTPDomainColor")
-    static let footerText = Color(designSystemColor: .textSecondary)
-    static let buttonColor = Color(designSystemColor: .accent)
-    static let viewBackground = Color(designSystemColor: .background)
+    static let buttonColor = Color("AppTPBreakageButton")
+    static let buttonLabelColor = Color("AppTPBreakageButtonLabel")
+    static let disabledButton = Color("AppTPBreakageButtonDisabled")
+    static let disabledButtonLabel = Color("AppTPBreakageButtonLabelDisabled")
 }

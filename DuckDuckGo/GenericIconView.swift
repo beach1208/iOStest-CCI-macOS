@@ -29,9 +29,10 @@ struct GenericIconView: View {
             Circle()
                 .foregroundColor(trackerColor)
             
-            Text(trackerLetter.uppercased())
+            Text(trackerLetter)
                 .font(Font(uiFont: Const.Font.sectionHeader))
                 .foregroundColor(.white)
+                .padding(.top, 1)
         }
         .frame(width: 24)
     }

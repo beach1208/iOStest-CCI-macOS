@@ -49,22 +49,25 @@ class SyncSettingsViewController: UIHostingController<SyncSettingsView> {
 
     var cancellables = Set<AnyCancellable>()
 
-    // For some reason, on iOS 14, the viewDidLoad wasn't getting called so do some setup here
     convenience init() {
         self.init(rootView: SyncSettingsView(model: SyncSettingsViewModel()))
 
-        refreshForState(syncService.authState)
+        // For some reason, on iOS 14, the viewDidLoad wasn't getting called so do some setup here
+        if syncService.authState == .active {
+            rootView.model.syncEnabled(recoveryCode: recoveryCode)
+            refreshDevices()
+        }
 
         syncService.authStatePublisher
             .removeDuplicates()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] authState in
-                self?.refreshForState(authState)
+                self?.rootView.model.isSyncEnabled = authState != .inactive
             }
             .store(in: &cancellables)
 
         rootView.model.delegate = self
-        navigationItem.title = UserText.syncTitle
+        navigationItem.title = "Sync" // TODO externalise
     }
 
     override func viewDidLoad() {
@@ -75,14 +78,6 @@ class SyncSettingsViewController: UIHostingController<SyncSettingsView> {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         connector = nil
-    }
-
-    func refreshForState(_ authState: SyncAuthState) {
-        rootView.model.isSyncEnabled = authState != .inactive
-        if authState != .inactive {
-            rootView.model.syncEnabled(recoveryCode: recoveryCode)
-            refreshDevices()
-        }
     }
 
     func dismissPresentedViewController() {

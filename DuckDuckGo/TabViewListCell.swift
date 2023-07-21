@@ -47,8 +47,7 @@ class TabViewListCell: TabViewCell {
         accessibilityElements = [ title as Any, removeButton as Any ]
         
         self.tab = tab
-        self.collectionReorderRecognizer = reorderRecognizer
-        
+
         if !isDeleting {
             isHidden = false
         }

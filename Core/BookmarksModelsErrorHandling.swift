@@ -20,16 +20,15 @@
 import Foundation
 import Bookmarks
 import Common
-import DDGSync
 import Persistence
 import CoreData
 
 public class BookmarksModelsErrorHandling: EventMapping<BookmarksModelError> {
 
     // swiftlint:disable:next cyclomatic_complexity
-    init(syncService: DDGSyncing? = nil) {
+    init() {
         super.init { event, error, _, _ in
-            var domainEvent: Pixel.Event?
+            let domainEvent: Pixel.Event
             var params = [String: String]()
             switch event {
                 
@@ -57,18 +56,12 @@ public class BookmarksModelsErrorHandling: EventMapping<BookmarksModelError> {
                 
             case .missingParent(let object):
                 domainEvent = .missingParent(object)
-            case .orphanedBookmarksPresent:
-                if let syncService, syncService.authState == .inactive {
-                    domainEvent = .orphanedBookmarksPresent
-                }
             }
-
-            if let domainEvent {
-                if let error = error {
-                    Pixel.fire(pixel: domainEvent, error: error, withAdditionalParameters: params)
-                } else {
-                    Pixel.fire(pixel: domainEvent)
-                }
+            
+            if let error = error {
+                Pixel.fire(pixel: domainEvent, error: error, withAdditionalParameters: params)
+            } else {
+                Pixel.fire(pixel: domainEvent)
             }
         }
     }
@@ -81,31 +74,28 @@ public class BookmarksModelsErrorHandling: EventMapping<BookmarksModelError> {
 public extension BookmarkEditorViewModel {
     
     convenience init(editingEntityID: NSManagedObjectID,
-                     bookmarksDatabase: CoreDataDatabase,
-                     syncService: DDGSyncing?) {
+                     bookmarksDatabase: CoreDataDatabase) {
         self.init(editingEntityID: editingEntityID,
                   bookmarksDatabase: bookmarksDatabase,
-                  errorEvents: BookmarksModelsErrorHandling(syncService: syncService))
+                  errorEvents: BookmarksModelsErrorHandling())
         
     }
     
     convenience init(creatingFolderWithParentID parentFolderID: NSManagedObjectID?,
-                     bookmarksDatabase: CoreDataDatabase,
-                     syncService: DDGSyncing?) {
+                     bookmarksDatabase: CoreDataDatabase) {
         self.init(creatingFolderWithParentID: parentFolderID,
                   bookmarksDatabase: bookmarksDatabase,
-                  errorEvents: BookmarksModelsErrorHandling(syncService: syncService))
+                  errorEvents: BookmarksModelsErrorHandling())
     }
 }
 
 public extension BookmarkListViewModel {
     
     convenience init(bookmarksDatabase: CoreDataDatabase,
-                     parentID: NSManagedObjectID?,
-                     syncService: DDGSyncing?) {
+                     parentID: NSManagedObjectID?) {
         self.init(bookmarksDatabase: bookmarksDatabase,
                   parentID: parentID,
-                  errorEvents: BookmarksModelsErrorHandling(syncService: syncService))
+                  errorEvents: BookmarksModelsErrorHandling())
     }
 }
 
@@ -119,8 +109,8 @@ public extension FavoritesListViewModel {
 
 public extension MenuBookmarksViewModel {
     
-    convenience init(bookmarksDatabase: CoreDataDatabase, syncService: DDGSyncing?) {
+    convenience init(bookmarksDatabase: CoreDataDatabase) {
         self.init(bookmarksDatabase: bookmarksDatabase,
-                  errorEvents: BookmarksModelsErrorHandling(syncService: syncService))
+                  errorEvents: BookmarksModelsErrorHandling())
     }
 }

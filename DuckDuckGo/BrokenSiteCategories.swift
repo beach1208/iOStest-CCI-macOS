@@ -21,7 +21,7 @@ import Foundation
 
 struct BrokenSite {
     
-    enum Category: String, CaseIterable, Identifiable {
+    enum Category: String, CaseIterable {
         case images
         case paywall
         case comments
@@ -32,8 +32,6 @@ struct BrokenSite {
         case unsupported
         case cookiePrompt = "cookieprompt"
         case other
-        
-        var id: Self { self }
         
         var categoryText: String {
             switch self {

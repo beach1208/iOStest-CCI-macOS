@@ -32,6 +32,8 @@ class BookmarksMigrationTests: XCTestCase {
     override func setUp() async throws {
         try await super.setUp()
         
+        destinationStack.loadStore()
+        
         let containerLocation = MockBookmarksDatabase.tempDBDir()
         try FileManager.default.createDirectory(at: containerLocation, withIntermediateDirectories: true)
         
@@ -121,7 +123,7 @@ class BookmarksMigrationTests: XCTestCase {
         XCTAssertNotNil(BookmarkUtils.fetchRootFolder(context))
         XCTAssertNotNil(BookmarkUtils.fetchFavoritesFolder(context))
         
-        let topLevel = BookmarkListViewModel(bookmarksDatabase: destinationStack, parentID: nil, syncService: nil)
+        let topLevel = BookmarkListViewModel(bookmarksDatabase: destinationStack, parentID: nil)
         XCTAssertEqual(topLevel.bookmarks.count, 4)
         
         let topLevelNames = topLevel.bookmarks.map { $0.title }

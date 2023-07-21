@@ -27,7 +27,6 @@ class AppTPHomeViewSectionRenderer: NSObject, HomeViewSectionRenderer {
     
     struct Constants {
         static let topMargin: CGFloat = 16
-        static let topMarginPad: CGFloat = 28
         static let horizontalMargin: CGFloat = 16
     }
     
@@ -70,7 +69,7 @@ class AppTPHomeViewSectionRenderer: NSObject, HomeViewSectionRenderer {
         let widthNotTakenByCell = collectionView.frame.width - collectionViewCellWidth(collectionView)
         let horizontalInset = widthNotTakenByCell / 2.0
         
-        return UIEdgeInsets(top: isPad ? Constants.topMarginPad : Constants.topMargin, left: horizontalInset, bottom: 0, right: horizontalInset)
+        return UIEdgeInsets(top: Constants.topMargin, left: horizontalInset, bottom: 0, right: horizontalInset)
     }
     
     func collectionView(_ collectionView: UICollectionView,

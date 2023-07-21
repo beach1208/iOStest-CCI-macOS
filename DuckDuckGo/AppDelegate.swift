@@ -18,7 +18,6 @@
 //
 
 import UIKit
-import Combine
 import Common
 import Core
 import UserNotifications
@@ -61,7 +60,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private(set) var syncService: DDGSyncing!
     private(set) var syncDataProviders: SyncDataProviders!
-    private var syncDidFinishCancellable: AnyCancellable?
 
     // MARK: lifecycle
 
@@ -78,10 +76,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 .forEach { $0.perform(setHardwareLayout, with: nil) }
         }
         #endif
-
-        // Can be removed after a couple of versions
-        cleanUpMacPromoExperiment2()
-
+        
         APIRequest.Headers.setUserAgent(DefaultUserAgentManager.duckDuckGoUserAgent)
         Configuration.setURLProvider(AppConfigurationURLProvider())
 
@@ -192,7 +187,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         syncDataProviders = SyncDataProviders(bookmarksDatabase: bookmarksDatabase)
         syncService = DDGSync(dataProvidersSource: syncDataProviders, errorEvents: SyncErrorHandler(), log: .syncLog)
-        syncService.initializeIfNeeded(isInternalUser: InternalUserStore().isInternalUser)
 
         let storyboard: UIStoryboard = UIStoryboard(name: "Main", bundle: Bundle.main)
         
@@ -231,10 +225,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
-    private func cleanUpMacPromoExperiment2() {
-        UserDefaults.standard.removeObject(forKey: "com.duckduckgo.ios.macPromoMay23.exp2.cohort")
-    }
-
     private func clearTmp() {
         let tmp = FileManager.default.temporaryDirectory
         do {
@@ -255,8 +245,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         guard !testing else { return }
-
-        syncService.initializeIfNeeded(isInternalUser: InternalUserStore().isInternalUser)
 
         if !(overlayWindow?.rootViewController is AuthenticationViewController) {
             removeOverlay()
@@ -395,7 +383,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         beginAuthentication()
         autoClear?.applicationWillMoveToForeground()
         showKeyboardIfSettingOn = true
-        syncService.scheduler.resumeSyncQueue()
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
@@ -403,29 +390,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         autoClear?.applicationDidEnterBackground()
         lastBackgroundDate = Date()
         AppDependencyProvider.shared.autofillLoginSession.endSession()
-        suspendSync()
-    }
-
-    private func suspendSync() {
-        if syncService.isSyncInProgress {
-            os_log(.debug, log: .syncLog, "Sync is in progress. Starting background task to allow it to gracefully complete.")
-
-            var taskID: UIBackgroundTaskIdentifier!
-            taskID = UIApplication.shared.beginBackgroundTask(withName: "Cancelled Sync Completion Task") {
-                os_log(.debug, log: .syncLog, "Forcing background task completion")
-                UIApplication.shared.endBackgroundTask(taskID)
-            }
-            syncDidFinishCancellable?.cancel()
-            syncDidFinishCancellable = syncService.isSyncInProgressPublisher.filter { !$0 }
-                .prefix(1)
-                .receive(on: DispatchQueue.main)
-                .sink { _ in
-                    os_log(.debug, log: .syncLog, "Ending background task")
-                    UIApplication.shared.endBackgroundTask(taskID)
-                }
-        }
-
-        syncService.scheduler.cancelSyncAndSuspendSyncQueue()
     }
 
     func application(_ application: UIApplication,

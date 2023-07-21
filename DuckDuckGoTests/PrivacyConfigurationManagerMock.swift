@@ -29,8 +29,7 @@ class PrivacyConfigurationMock: PrivacyConfiguration {
 
     var tempUnprotectedDomains: [String] = []
 
-    var trackerAllowlist: PrivacyConfigurationData.TrackerAllowlist = .init(entries: [:],
-                                                                            state: PrivacyConfigurationData.State.enabled)
+    var trackerAllowlist: PrivacyConfigurationData.TrackerAllowlistData = [:]
 
     var exceptionList: [PrivacyFeature: [String]] = [:]
     func exceptionsList(forFeature featureKey: PrivacyFeature) -> [String] {

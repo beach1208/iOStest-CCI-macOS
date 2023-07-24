@@ -75,5 +75,5 @@ workflows:
           executor: gen2_medium
       - integration_test:
           executor: gen2_medium
-      - build:
-          executor: gen2_medium
+      # - build:
+      #     executor: gen2_medium

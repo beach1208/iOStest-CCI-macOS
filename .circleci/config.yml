@@ -12,7 +12,7 @@ executors:
   m1_medium:
     macos:
       xcode: 14.3.1
-    resource_class: macos.m1.medium.gen1
+    resource_class: macos.m1.large.gen1
 
 jobs:
   unit_test:

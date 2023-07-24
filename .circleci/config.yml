@@ -9,10 +9,10 @@ executors:
     macos:
       xcode: 14.3.1
     resource_class: macos.x86.medium.gen2
-  m1_large:
+  m1_medium:
     macos:
       xcode: 14.3.1
-    resource_class: macos.m1.large.gen1
+    resource_class: macos.m1.medium.gen1
 
 jobs:
   unit_test:
@@ -63,9 +63,9 @@ workflows:
   m1_large_workflow:
     jobs:
       - unit_test:
-          executor: m1_large
+          executor: m1_medium
       - integration_test:
-          executor: m1_large
+          executor: m1_medium
       # - build:
       #     executor: m1_large
 

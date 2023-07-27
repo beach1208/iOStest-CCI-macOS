@@ -20,11 +20,11 @@ executors:
 
 jobs:
   unit_test:
-  parallelism: 2
     parameters:
       executor:
         type: executor
     executor: << parameters.executor >>
+    parallelism: 2
     steps:
       - macos/preboot-simulator:
           device: iPhone 14

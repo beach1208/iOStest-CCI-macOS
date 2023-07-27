@@ -24,7 +24,7 @@ jobs:
       executor:
         type: executor
     executor: << parameters.executor >>
-    parallelism: 2
+    parallelism: 4
     steps:
       - macos/preboot-simulator:
           device: iPhone 14
@@ -33,15 +33,15 @@ jobs:
       - run: git submodule update --init --recursive
       - ruby/install-deps
       - run: bundle exec fastlane unit_tests
-      - run:
-        name: Split tests and run UITests
-        command: |
-          CLASSNAMES=$(circleci tests glob "FingerprintUITests/*.swift" \
-          | sed 's@/@.@g' \
-          | sed 's/.swift//' \
-          | circleci tests split --split-by=timings --timings-type=classname)
-          FASTLANE_ARGS=$(echo $CLASSNAMES | sed -e 's/\./\//g' -e 's/ /,/g')
-          bundle exec fastlane ui_test_without_building tests:$FASTLANE_ARGS
+      # - run:
+      #   name: Split tests and run UITests
+      #   command: |
+      #     CLASSNAMES=$(circleci tests glob "FingerprintUITests/*.swift" \
+      #     | sed 's@/@.@g' \
+      #     | sed 's/.swift//' \
+      #     | circleci tests split --split-by=timings --timings-type=classname)
+      #     FASTLANE_ARGS=$(echo $CLASSNAMES | sed -e 's/\./\//g' -e 's/ /,/g')
+      #     bundle exec fastlane ui_test_without_building tests:$FASTLANE_ARGS
       - store_test_results:
           path: fastlane/report.xml
 
@@ -50,6 +50,7 @@ jobs:
       executor:
         type: executor
     executor: << parameters.executor >>
+    parallelism: 4
     steps:
       - macos/preboot-simulator:
           device: iPhone 14

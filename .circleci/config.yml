@@ -98,7 +98,7 @@ workflows:
     jobs:
       - unit_test:
           executor: m1_large
-       - ui_test_parallel:
+      - ui_test_parallel:
           executor: m1_large
       - integration_test:
           executor: m1_large

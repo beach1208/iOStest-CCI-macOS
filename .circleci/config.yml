@@ -33,17 +33,35 @@ jobs:
       - run: git submodule update --init --recursive
       - ruby/install-deps
       - run: bundle exec fastlane unit_tests
-      # - run:
-      #   name: Split tests and run UITests
-      #   command: |
-      #     CLASSNAMES=$(circleci tests glob "FingerprintUITests/*.swift" \
-      #     | sed 's@/@.@g' \
-      #     | sed 's/.swift//' \
-      #     | circleci tests split --split-by=timings --timings-type=classname)
-      #     FASTLANE_ARGS=$(echo $CLASSNAMES | sed -e 's/\./\//g' -e 's/ /,/g')
-      #     bundle exec fastlane ui_test_without_building tests:$FASTLANE_ARGS
       - store_test_results:
           path: fastlane/report.xml
+
+  ui_test_parallel:
+    parameters:
+      executor:
+        type: executor
+    executor: << parameters.executor >>
+    parallelism: 4
+    steps:
+      - checkout
+      - macos/preboot-simulator:
+          device: iPhone 14
+          version: "16.4"
+      - attach_workspace:
+          at: .
+      - ruby/install-deps
+      - run:
+          name: Split tests and run UITests
+          command: |
+            CLASSNAMES=$(circleci tests glob "UnitTests/*.swift" \
+              | sed 's@/@.@g' \
+              | sed 's/.swift//' \
+              | circleci tests split --split-by=timings --timings-type=classname)
+            FASTLANE_ARGS=$(echo $CLASSNAMES | sed -e 's/\./\//g' -e 's/ /,/g')
+            bundle exec fastlane ui_test_without_building tests:$FASTLANE_ARGS
+      - store_test_results:
+          path: fastlane/report.xml
+
 
   integration_test:
     parameters:
@@ -79,6 +97,8 @@ workflows:
   m1_large_workflow:
     jobs:
       - unit_test:
+          executor: m1_large
+       - ui_test_parallel:
           executor: m1_large
       - integration_test:
           executor: m1_large
